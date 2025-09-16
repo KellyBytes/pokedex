@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getFullPokedexNumber, getPokedexNumber } from '../utils';
 import TypeCard from './TypeCard';
 import Modal from './Modal';
@@ -9,6 +9,7 @@ const PokeCard = (props) => {
   const [loading, setLoading] = useState(false);
   const [skill, setSkill] = useState(null);
   const [loadingSkill, setLoadingSkill] = useState(false);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const { name, height, abilities, stats, types, moves, sprites } = data || {};
 
@@ -56,6 +57,18 @@ const PokeCard = (props) => {
       setLoadingSkill(false);
     }
   }
+
+  // create sorted moves
+  const sortedMoves = useMemo(() => {
+    const safeMoves = Array.isArray(moves) ? moves : [];
+    return [...safeMoves].sort((a, b) => {
+      const nameA = a.move.name.toLowerCase();
+      const nameB = b.move.name.toLowerCase();
+      return sortOrder === 'asc'
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
+    });
+  }, [moves, sortOrder]);
 
   useEffect(() => {
     // if loading, exit logic
@@ -166,9 +179,24 @@ const PokeCard = (props) => {
           );
         })}
       </div>
-      <h3>Moves</h3>
+      <div className="move-header">
+        <h3>Moves</h3>
+        <button
+          // className="button-card"
+          onClick={() => {
+            setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+          }}
+        >
+          {sortOrder === 'asc' ? (
+            <i className="fa-solid fa-arrow-up-z-a"></i>
+          ) : (
+            <i className="fa-solid fa-arrow-up-a-z"></i>
+          )}
+        </button>
+      </div>
       <div className="pokemon-move-grid">
-        {moves.map((moveObj, moveIndex) => {
+        {/* {moves.map((moveObj, moveIndex) => { */}
+        {sortedMoves.map((moveObj, moveIndex) => {
           return (
             <button
               className="button-card pokemon-move"

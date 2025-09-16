@@ -167,6 +167,12 @@ h3 {
   gap: 0.25rem 1rem;
 }
 
+.move-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .pokemon-move-grid {
   display: flex;
   align-items: center;
